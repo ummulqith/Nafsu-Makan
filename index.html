@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nafsu Makan - Menu Interactive</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+        
+        .author {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 400;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .promo-text {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 12px 30px;
+            display: inline-block;
+            margin-top: 15px;
+            color: white;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .category-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.8s;
+        }
+        
+        .category-card:hover::before {
+            left: 100%;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .menu-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .menu-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+        
+        .menu-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: rgba(255,255,255,0.5);
+        }
+        
+        .menu-item.active {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            transform: scale(1.05);
+            animation: pulse 1s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1.05); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1.05); }
+        }
+        
+        .menu-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .menu-item.active .price {
+            opacity: 1;
+            transform: translateY(0);
+            color: #fff;
+        }
+        
+        .unavailable {
+            color: #95a5a6 !important;
+            font-style: italic;
+        }
+        
+        .menu-item.active.unavailable {
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+        }
+        
+        /* Category Colors */
+        .dimsum { border-left: 5px solid #ff6b9d; }
+        .mie-bangladesh { border-left: 5px solid #4ecdc4; }
+        .mie-jebew { border-left: 5px solid #45b7d1; }
+        .mie-nyemek { border-left: 5px solid #f39c12; }
+        .mie-samyang { border-left: 5px solid #e74c3c; }
+        .nasi-kebuli { border-left: 5px solid #8b4513; }
+        .pisang-goreng { border-left: 5px solid #f1c40f; }
+        .salad-buah { border-left: 5px solid #2ecc71; }
+        
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .shape:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        .shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .click-hint {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            margin: 30px 0;
+            animation: fadeInOut 3s infinite;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes orderPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(37, 211, 102, 0.6); }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .categories {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .category-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape" style="width: 100px; height: 100px; background: linear-gradient(45deg, #ff6b6b, #4ecdc4); border-radius: 50%;"></div>
+        <div class="shape" style="width: 80px; height: 80px; background: linear-gradient(45deg, #45b7d1, #f093fb); border-radius: 30%;"></div>
+        <div class="shape" style="width: 120px; height: 120px; background: linear-gradient(45deg, #f39c12, #2ecc71); border-radius: 25%;"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>NAFSU MAKAN</h1>
+            <div class="author">By: Nurul Wahdah</div>
+            <div class="promo-text">✨ GRAND OPENING PROMO ✨</div>
+        </div>
+        
+        <div class="click-hint">
+            👆 Klik menu untuk lihat harga! 👆
+        </div>
+        
+        <div class="categories">
+            <!-- Dimsum -->
+            <div class="category-card">
+                <div class="category-title">🥟 DIMSUM</div>
+                <div class="menu-grid">
+                    <div class="menu-item dimsum" onclick="togglePrice(this)">
+                        <div class="menu-name">🥟 Dimsum Biasa isi 4</div>
+                        <div class="price"><del style="color:red">Rp 24.000</del> <strong>Rp 17.000</strong></div>
+                    </div>
+                    <div class="menu-item dimsum" onclick="togglePrice(this)">
+                        <div class="menu-name">🥟 Dimsum Biasa isi 6</div>
+                        <div class="price"><del style="color:red">Rp 35.000</del> <strong>Rp 25.500</strong></div>
+                    </div>
+                    <div class="menu-item dimsum" onclick="togglePrice(this)">
+                        <div class="menu-name">🥟 Dimsum Biasa isi 12</div>
+                        <div class="price"><del style="color:red">Rp 72.000</del> <strong>Rp 51.000</strong></div>
+                    </div>
+                    <div class="menu-item dimsum" onclick="togglePrice(this)">
+                        <div class="menu-name">🥟 Dimsum Mentai isi 4</div>
+                        <div class="price"><del style="color:red">Rp 32.000</del> <strong>Rp 23.900</strong></div>
+                    </div>
+                    <div class="menu-item dimsum" onclick="togglePrice(this)">
+                        <div class="menu-name">🥟 Dimsum Mentai isi 6</div>
+                        <div class="price"><del style="color:red">Rp 43.000</del> <strong>Rp 31.500</strong></div>
+                    </div>
+                    <div class="menu-item dimsum" onclick="togglePrice(this)">
+                        <div class="menu-name">🥟 Dimsum Mentai isi 12</div>
+                        <div class="price"><del style="color:red">Rp 74.000</del> <strong>Rp 53.300</strong></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mie Bangladesh -->
+            <div class="category-card">
+                <div class="category-title">🍜 MIE BANGLADESH</div>
+                <div class="menu-grid">
+                    <div class="menu-item mie-bangladesh" onclick="togglePrice(this)">
+                        <div class="menu-name">🍜 Mie Bangladesh</div>
+                        <div class="price"><del style="color:red">Rp 28.000</del> <strong>Rp 20.000</strong></div>
+                    </div>
+                    <div class="menu-item mie-bangladesh" onclick="togglePrice(this)">
+                        <div class="menu-name">🍜 Mie Bangladesh Bundle 3</div>
+                        <div class="price"><del style="color:red">Rp 81.000</del> <strong>Rp 57.000</strong></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mie Jebew -->
+            <div class="category-card">
+                <div class="category-title">🍜 MIE JEBEW</div>
+                <div class="menu-grid">
+                    <div class="menu-item mie-jebew" onclick="togglePrice(this)">
+                        <div class="menu-name">🍜 Mie Jebew</div>
+                        <div class="price"><del style="color:red">Rp 24.500</del> <strong>Rp 17.500</strong></div>
+                    </div>
+                    <div class="menu-item mie-jebew" onclick="togglePrice(this)">
+                        <div class="menu-name">🍜 Mie Jebew Bundle 3</div>
+                        <div class="price"><del style="color:red">Rp 72.000</del> <strong>Rp 50.000</strong></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mie Nyemek Nenek -->
+            <div class="category-card">
+                <div class="category-title">🍜 MIE NYEMEK NENEK</div>
+                <div class="menu-grid">
+                    <div class="menu-item mie-nyemek" onclick="togglePrice(this)">
+                        <div class="menu-name">🍜 Mie Nyemek Nenek</div>
+                        <div class="price"><del style="color:red">Rp 34.500</del> <strong>Rp 25.000</strong></div>
+                    </div>
+                    <div class="menu-item mie-nyemek" onclick="togglePrice(this)">
+                        <div class="menu-name">🍜 Mie Nyemek Nenek Bundle 3</div>
+                        <div class="price"><del style="color:red">Rp 31.500</del> <strong>Rp 22.000</strong></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mie Samyang -->
+            <div class="category-card">
+                <div class="category-title">🌶️ MIE SAMYANG</div>
+                <div class="menu-grid">
+                    <div class="menu-item mie-samyang" onclick="togglePrice(this)">
+                        <div class="menu-name">🌶️ Mie Samyang Jeletot</div>
+                        <div class="price"><del style="color:red">Rp 50.000</del> <strong>Rp 35.000</strong></div>
+                    </div>
+                    <div class="menu-item mie-samyang" onclick="togglePrice(this)">
+                        <div class="menu-name">🌶️ Mie Samyang Jeletot Bundle 3</div>
+                        <div class="price"><del style="color:red">Rp 132.000</del> <strong>Rp 93.000</strong></div>
+                    </div>
+                    <div class="menu-item mie-samyang" onclick="togglePrice(this)">
+                        <div class="menu-name">🧀 Mie Samyang Moza</div>
+                        <div class="price"><del style="color:red">Rp 44.000</del> <strong>Rp 31.999</strong></div>
+                    </div>
+                    <div class="menu-item mie-samyang" onclick="togglePrice(this)">
+                        <div class="menu-name">🧀 Mie Samyang Moza Bundle 3</div>
+                        <div class="price"><del style="color:red">Rp 132.000</del> <strong>Rp 93.000</strong></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pisang Goreng -->
+            <div class="category-card">
+                <div class="category-title">🍌 PISANG GORENG</div>
+                <div class="menu-grid">
+                    <div class="menu-item pisang-goreng" onclick="togglePrice(this)">
+                        <div class="menu-name">🍌 Pisang Goreng Keju Susu</div>
+                        <div class="price"><del style="color:red">Rp 21.500</del> <strong>Rp 15.000</strong></div>
+                    </div>
+                    <div class="menu-item pisang-goreng" onclick="togglePrice(this)">
+                        <div class="menu-name">🍌 Pisang Goreng Keju Susu Bundle 2</div>
+                        <div class="price"><del style="color:red">Rp 29.500</del> <strong>Rp 21.000</strong></div>
+                    </div>
+                    <div class="menu-item pisang-goreng" onclick="togglePrice(this)">
+                        <div class="menu-name">🍌 Pisang Goreng Keju Mesis</div>
+                        <div class="price"><del style="color:red">Rp 22.500</del> <strong>Rp 16.000</strong></div>
+                    </div>
+                    <div class="menu-item pisang-goreng" onclick="togglePrice(this)">
+                        <div class="menu-name">🍌 Pisang Goreng Keju Mesis Bundle 2</div>
+                        <div class="price"><del style="color:red">Rp 30.500</del> <strong>Rp 22.000</strong></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Nasi Kebuli & Lainnya -->
+            <div class="category-card">
+                <div class="category-title">🍛 LAINNYA</div>
+                <div class="menu-grid">
+                    <div class="menu-item nasi-kebuli unavailable" onclick="togglePrice(this)">
+                        <div class="menu-name">🍛 Nasi Kebuli Domba</div>
+                        <div class="price unavailable"><del style="color:red">Rp 63.000</del> <strong>Habis</strong></div>
+                    </div>
+                    <div class="menu-item salad-buah unavailable" onclick="togglePrice(this)">
+                        <div class="menu-name">🥗 Salad Buah</div>
+                        <div class="price unavailable"><del style="color:red">Rp 25.000</del> <strong>Habis</strong></div>
+                    </div>
+                    <div class="menu-item" onclick="togglePrice(this)" style="border-left: 5px solid #8b4513;">
+                        <div class="menu-name">🍞 Sweet Potato Cheese Bread</div>
+                        <div class="price"><del style="color:red">Rp 33.000</del> <strong>Rp 24.000</strong></div>
+                    </div>
+                    <div class="menu-item" onclick="togglePrice(this)" style="border-left: 5px solid #ff6b9d;">
+                        <div class="menu-name">🧀 Cimol Mozarella isi 15</div>
+                        <div class="price"><del style="color:red">Rp 25.000</del> <strong>Rp 18.000</strong></div>
+                    </div>
+                    <div class="menu-item" onclick="togglePrice(this)" style="border-left: 5px solid #f39c12;">
+                        <div class="menu-name">🌶️ Cimol Bojot isi 18</div>
+                        <div class="price"><del style="color:red">Rp 21.500</del> <strong>Rp 15.000</strong></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Minuman -->
+            <div class="category-card">
+                <div class="category-title">🥤 MINUMAN</div>
+                <div class="menu-grid">
+                    <div class="menu-item" onclick="togglePrice(this)" style="border-left: 5px solid #2ecc71;">
+                        <div class="menu-name">🍵 Milk Matcha</div>
+                        <div class="price"><del style="color:red">Rp 15.000</del> <strong>Rp 11.000</strong></div>
+                    </div>
+                    <div class="menu-item" onclick="togglePrice(this)" style="border-left: 5px solid #8b4513;">
+                        <div class="menu-name">🍫 Milk Choco with Beng Beng Blend</div>
+                        <div class="price"><del style="color:red">Rp 18.500</del> <strong>Rp 13.000</strong></div>
+                    </div>
+                    <div class="menu-item" onclick="togglePrice(this)" style="border-left: 5px solid #f39c12;">
+                        <div class="menu-name">🍊 Orange Drink</div>
+                        <div class="price"><del style="color:red">Rp 11.500</del> <strong>Rp 8.000</strong></div>
+                    </div>
+                    <div class="menu-item" onclick="togglePrice(this)" style="border-left: 5px solid #2ecc71;">
+                        <div class="menu-name">🍋 Minuman Jeruk Nipis</div>
+                        <div class="price"><del style="color:red">Rp 12.500</del> <strong>Rp 9.000</strong></div>
+                    </div>
+                    <div class="menu-item" onclick="togglePrice(this)" style="border-left: 5px solid #e74c3c;">
+                        <div class="menu-name">🍎 Minuman Jambu</div>
+                        <div class="price"><del style="color:red">Rp 11.000</del> <strong>Rp 8.000</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tombol Order -->
+        <div style="text-align: center; margin-top: 50px;">
+            <a href="https://wa.me/6287887369898?text=Assalamualaikum%20warahmatullahi%20wabarakatuh%2C%20Kak.%20Aku%20mau%20pesan%20menu%20%28sebutkan%20menunya%29%20yang%20ini%2C%20ya%20%F0%9F%98%8A" 
+               target="_blank" 
+               style="background: linear-gradient(135deg, #25D366, #128C7E); 
+                      color: white; 
+                      padding: 20px 40px; 
+                      border-radius: 50px; 
+                      text-decoration: none; 
+                      font-weight: 800; 
+                      font-size: 1.4rem; 
+                      text-transform: uppercase; 
+                      box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+                      transition: all 0.3s ease;
+                      display: inline-block;
+                      animation: orderPulse 2s infinite;">
+                📱 KLIK DISINI UNTUK ORDER! 📱
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        function togglePrice(element) {
+            // Remove active class from all menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                if (item !== element) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Toggle active class on clicked element
+            element.classList.toggle('active');
+            
+            // Add some juice with sound effect simulation
+            if (element.classList.contains('active')) {
+                // Create a small shake effect
+                element.style.animation = 'none';
+                element.offsetHeight; // Trigger reflow
+                element.style.animation = 'pulse 0.6s ease-in-out';
+            }
+        }
+        
+        // Add some interactive floating elements
+        document.addEventListener('mousemove', (e) => {
+            const shapes = document.querySelectorAll('.shape');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            shapes.forEach((shape, index) => {
+                const speed = (index + 1) * 0.02;
+                const xOffset = (x - 0.5) * 50 * speed;
+                const yOffset = (y - 0.5) * 50 * speed;
+                
+                shape.style.transform = `translate(${xOffset}px, ${yOffset}px) rotate(${x * 360}deg)`;
+            });
+        });
+        
+        // Add click sound effect simulation
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                // Create visual feedback
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.left = '50%';
+                ripple.style.top = '50%';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.marginLeft = '-10px';
+                ripple.style.marginTop = '-10px';
+                
+                item.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+        
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
